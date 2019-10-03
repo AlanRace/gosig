@@ -1,6 +1,8 @@
 package gosig
 
 import (
+	"math"
+
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -22,7 +24,7 @@ func (dict *GaussianDictionary) GetAsMat(numEntries int) *mat.Dense {
 		dictionary.Set(i, i, 1)
 	}
 
-	coeffVals := dict.gaussian.GetCoeffs(numEntries / 2)
+	coeffVals := dict.gaussian.GetCoeffs(int(math.Ceil(dict.gaussian.sigma) * 5))
 	coeffs := mat.NewVecDense(len(coeffVals), coeffVals)
 
 	dictionary = ConvolveMatVec(dictionary, coeffs)

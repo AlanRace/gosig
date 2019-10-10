@@ -29,3 +29,23 @@ func ConvolveMatVec(data *mat.Dense, vec *mat.VecDense) *mat.Dense {
 
 	return result
 }
+
+func ConvolveVecVec(data *mat.VecDense, filter *mat.VecDense) *mat.VecDense {
+	result := mat.NewVecDense(data.Len(), nil)
+
+	halfWidth := (filter.Len() - 1) / 2
+
+	for col := 0; col < data.Len(); col++ {
+		for x := -halfWidth; x <= halfWidth; x++ {
+			if x+col < 0 {
+				continue
+			} else if x+col >= data.Len() {
+				break
+			}
+
+			result.SetVec(col, result.AtVec(col)+data.AtVec(x+col)*filter.AtVec(x+halfWidth))
+		}
+	}
+
+	return result
+}

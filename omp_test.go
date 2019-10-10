@@ -16,7 +16,20 @@ func TestOMP(t *testing.T) {
 	signal := Signal{X: data, Y: data}
 
 	gaussian := NewGaussian(1.0)
-	dictionary := NewGaussianDictionary(gaussian)
+	dictionary := NewGaussianDictionary(gaussian, len(data))
+
+	fmt.Println(dictionary)
+	fmt.Println(dictionary.middleEntry)
+
+	rows, cols := dictionary.Dims()
+
+	for r := 0; r < rows; r++ {
+		for c := 0; c < cols; c++ {
+			fmt.Printf("%.7f   ", dictionary.At(r, c))
+		}
+
+		fmt.Println()
+	}
 
 	fmt.Println(OMP(&signal, dictionary, 5, 3))
 }

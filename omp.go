@@ -12,11 +12,11 @@ import (
 // OMP performs Orthognal Matching Pursuit to fit up to maxFits signals, separated by at least minDist, from the dictionary to the data
 func OMP(signal *Signal, dict Dictionary, maxFits, minDist int) ([]int, []float64) {
 	signalLength := signal.Len()
-	dictionary := dict.GetAsMat(signalLength)
+	//	dictionary := dict.GetAsMat(signalLength)
 
 	data := mat.NewVecDense(signalLength, signal.Y)
 
-	remainingDictionary := mat.DenseCopyOf(dictionary)
+	remainingDictionary := NewPartialDictionary(dict)
 
 	residual := mat.VecDenseCopyOf(data)
 
@@ -70,7 +70,7 @@ func OMP(signal *Signal, dict Dictionary, maxFits, minDist int) ([]int, []float6
 		P := mat.NewDense(signalLength, k+1, nil)
 		for row := 0; row < signalLength; row++ {
 			for col := 0; col <= k; col++ {
-				P.Set(row, col, dictionary.At(row, optimalDictIndicies[col]))
+				P.Set(row, col, dict.At(row, optimalDictIndicies[col]))
 			}
 		}
 
@@ -94,12 +94,12 @@ func OMP(signal *Signal, dict Dictionary, maxFits, minDist int) ([]int, []float6
 		norm := impl.Dnrm2(yfit.Len(), yfit.RawVector().Data, 1)
 		qual[k] = (norm * norm) / squareNorm.At(0, 0)
 
-		remainingDictionary = stripDictionary(dictionary, J)
+		remainingDictionary.KeepCols(J) //= stripDictionary(dictionary, J)
 	}
 
-	/*fmt.Println(optimalDictIndicies)
-	fmt.Println(coeff)
-	fmt.Println(qual)*/
+	//fmt.Println(optimalDictIndicies)
+	//fmt.Println(coeff)
+	//fmt.Println(qual)
 
 	return optimalDictIndicies, qual
 }
